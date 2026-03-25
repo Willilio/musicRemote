@@ -15,7 +15,9 @@ INDEX_FILE_NAME = "index.txt"
 # downloadSong(artist, title) - a private method to download an audio file to the music directory
 # addToLibrary(artist, title) - if a song is not in the library, add it by searching and downloading
 # removeFromLibrary(artist, title) - if a song is in the library, remove it and erase the download
+# clearLibrary() - remove all songs from the library
 # playSong(artist, title) - begins playing the selected song
+# stopPlaying() - ends playback of current song
 
 import os
 import sys
@@ -131,6 +133,7 @@ def addToLibrary(artist, title):
 
 # Remove a song from the library and index file.
 # This also deletes the downloaded music file.
+# TODO: fix this method (bad detection and errors on clear)
 def removeFromLibrary(artist, title):
 
     if checkSong(artist, title):
@@ -165,6 +168,21 @@ def removeFromLibrary(artist, title):
             __readLibrary()
 
 
+# Clear the library of all songs
+def clearLibrary():
+
+    try:
+
+        for song in _library:
+            removeFromLibrary(song[0], song[1])
+            print(f"Removed {song[0]}")
+
+    except Exception as e:
+
+        print("Failed to clear library.")
+        print(e)
+
+
 # Begins playing a song from the beginning.
 # It only works for songs present in the library.
 def playSong(artist, title):
@@ -175,14 +193,16 @@ def playSong(artist, title):
             pygame.mixer.music.load(f"{MUSIC_DIRECTORY_NAME}/{artist.lower()}-{title.lower()}.mp3")
             pygame.mixer.music.play()
 
-            # Keep the script alive while music plays
-            while pygame.mixer.music.get_busy():
-                pygame.time.Clock().tick(10)
-
         except Exception as e:
 
             print("Failed to play song.")
             print(e)
+
+
+# Stops playing music
+def stopPlaying():
+
+    pygame.mixer.music.stop()
 
 
 # Setup code should be executed when this module is imported
